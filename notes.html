@@ -3,76 +3,437 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Notes App</title>
+  <title>Enhanced Notes App</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background: #f5f5f5;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #74b9ff 0%, #0984e3 50%, #6c5ce7 100%);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 40px;
+    }
+
+    .container {
+      max-width: 700px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 25px;
+      padding: 40px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
     h1 {
       text-align: center;
+      color: #2d3436;
+      margin-bottom: 10px;
+      font-weight: 300;
+      font-size: 2.5rem;
+      background: linear-gradient(135deg, #74b9ff, #6c5ce7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
+
+    .subtitle {
+      text-align: center;
+      color: #636e72;
+      margin-bottom: 40px;
+      font-size: 1rem;
+      font-weight: 300;
+    }
+
+    .input-section {
+      background: rgba(116, 185, 255, 0.1);
+      padding: 25px;
+      border-radius: 20px;
+      margin-bottom: 30px;
+      border: 1px solid rgba(116, 185, 255, 0.2);
+    }
+
     #noteInput {
-      width: 80%;
-      height: 80px;
-      display: block;
-      margin: 10px auto;
+      width: 100%;
+      min-height: 120px;
+      padding: 20px;
+      border: 2px solid transparent;
+      border-radius: 15px;
+      font-size: 1rem;
+      font-family: inherit;
+      outline: none;
+      resize: vertical;
+      background: rgba(255, 255, 255, 0.9);
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
-    button {
-      display: block;
-      margin: 10px auto;
-      padding: 5px 15px;
-      cursor: pointer;
+
+    #noteInput:focus {
+      border-color: #74b9ff;
+      box-shadow: 0 0 0 4px rgba(116, 185, 255, 0.2);
+      background: white;
     }
-    ul {
-      list-style-type: none;
-      padding: 0;
+
+    #noteInput::placeholder {
+      color: #b2bec3;
+      font-style: italic;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 15px;
       margin-top: 20px;
+      justify-content: center;
     }
-    li {
-      background: #fff;
-      padding: 10px;
-      margin: 5px 0;
-      border: 1px solid #ccc;
-    }
-    .delete-btn {
-      float: right;
-      color: red;
+
+    .add-btn {
+      background: linear-gradient(135deg, #00b894, #00a085);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 12px;
       cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 184, 148, 0.3);
+    }
+
+    .add-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0, 184, 148, 0.4);
+    }
+
+    .add-btn:active {
+      transform: translateY(-1px);
+    }
+
+    .clear-btn {
+      background: linear-gradient(135deg, #fd79a8, #e84393);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(253, 121, 168, 0.3);
+    }
+
+    .clear-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(253, 121, 168, 0.4);
+    }
+
+    .notes-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 0 10px;
+    }
+
+    .notes-title {
+      font-size: 1.3rem;
+      color: #2d3436;
+      font-weight: 500;
+    }
+
+    .notes-count {
+      background: linear-gradient(135deg, #74b9ff, #6c5ce7);
+      color: white;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: 0 3px 10px rgba(116, 185, 255, 0.3);
+    }
+
+    #notesList {
+      list-style: none;
+      padding: 0;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .note-item {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      margin: 15px 0;
+      border-radius: 15px;
+      position: relative;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      animation: noteSlideIn 0.4s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    @keyframes noteSlideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .note-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .note-content {
+      padding-right: 60px;
+      line-height: 1.6;
+      color: #2d3436;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .note-meta {
+      font-size: 0.8rem;
+      color: #636e72;
+      margin-top: 10px;
+      font-style: italic;
+    }
+
+    .delete-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+      color: white;
+      border: none;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 10px rgba(255, 107, 107, 0.3);
+    }
+
+    .delete-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 5px 15px rgba(255, 107, 107, 0.5);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #b2bec3;
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      opacity: 0.5;
+    }
+
+    .empty-state p {
+      font-size: 1.1rem;
+      font-style: italic;
+    }
+
+    /* Scrollbar styling */
+    #notesList::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #notesList::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+    }
+
+    #notesList::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #74b9ff, #6c5ce7);
+      border-radius: 4px;
+    }
+
+    #notesList::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, #0984e3, #5f3dc4);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        margin: 10px;
+        padding: 25px;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .button-group {
+        flex-direction: column;
+      }
+      
+      .add-btn, .clear-btn {
+        width: 100%;
+      }
+      
+      .notes-header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Notes App</h1>
-  <textarea id="noteInput" placeholder="Write your note here..."></textarea>
-  <button onclick="addNote()">Add Note</button>
-  <ul id="notesList"></ul>
+  <div class="container">
+    <h1>📝 Notes App</h1>
+    <p class="subtitle">Capture your thoughts and ideas</p>
+    
+    <div class="input-section">
+      <textarea id="noteInput" placeholder="Write your note here... Press Enter + Ctrl to save quickly"></textarea>
+      <div class="button-group">
+        <button class="add-btn" onclick="addNote()">💾 Add Note</button>
+        <button class="clear-btn" onclick="clearAllNotes()">🗑️ Clear All</button>
+      </div>
+    </div>
+    
+    <div class="notes-header">
+      <h3 class="notes-title">Your Notes</h3>
+      <div class="notes-count">
+        <span id="notes-count">0</span> notes
+      </div>
+    </div>
+    
+    <ul id="notesList"></ul>
+    
+    <div id="empty-state" class="empty-state">
+      <div class="empty-state-icon">📋</div>
+      <p>No notes yet. Start writing above!</p>
+    </div>
+  </div>
 
   <script>
+    let noteIdCounter = 0;
+    let notes = [];
+
+    function updateNotesCount() {
+      document.getElementById('notes-count').textContent = notes.length;
+    }
+
+    function updateEmptyState() {
+      const emptyState = document.getElementById('empty-state');
+      const notesList = document.getElementById('notesList');
+      
+      if (notes.length === 0) {
+        emptyState.style.display = 'block';
+        notesList.style.display = 'none';
+      } else {
+        emptyState.style.display = 'none';
+        notesList.style.display = 'block';
+      }
+    }
+
+    function formatDate(date) {
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function renderNotes() {
+      const notesList = document.getElementById('notesList');
+      notesList.innerHTML = '';
+
+      // Show newest notes first
+      const sortedNotes = [...notes].reverse();
+
+      sortedNotes.forEach(note => {
+        const li = document.createElement('li');
+        li.className = 'note-item';
+        li.innerHTML = `
+          <div class="note-content">${note.text}</div>
+          <div class="note-meta">Created: ${formatDate(note.createdAt)}</div>
+          <button class="delete-btn" onclick="deleteNote(${note.id})" title="Delete note">×</button>
+        `;
+        notesList.appendChild(li);
+      });
+
+      updateNotesCount();
+      updateEmptyState();
+    }
+
     function addNote() {
-      const noteInput = document.getElementById("noteInput");
+      const noteInput = document.getElementById('noteInput');
       const noteText = noteInput.value.trim();
 
-      if (noteText === "") {
-        alert("Note cannot be empty!");
+      if (noteText === '') {
+        noteInput.focus();
+        noteInput.style.borderColor = '#ff6b6b';
+        setTimeout(() => {
+          noteInput.style.borderColor = 'transparent';
+        }, 1000);
         return;
       }
 
-      const li = document.createElement("li");
-      li.textContent = noteText;
-
-      const deleteBtn = document.createElement("span");
-      deleteBtn.textContent = "❌";
-      deleteBtn.classList.add("delete-btn");
-      deleteBtn.onclick = function () {
-        li.remove();
+      const newNote = {
+        id: ++noteIdCounter,
+        text: noteText,
+        createdAt: new Date()
       };
 
-      li.appendChild(deleteBtn);
-      document.getElementById("notesList").appendChild(li);
-      noteInput.value = "";
+      notes.push(newNote);
+      noteInput.value = '';
+      renderNotes();
+      noteInput.focus();
     }
+
+    function deleteNote(id) {
+      if (confirm('Are you sure you want to delete this note?')) {
+        notes = notes.filter(note => note.id !== id);
+        renderNotes();
+      }
+    }
+
+    function clearAllNotes() {
+      if (notes.length === 0) return;
+      
+      if (confirm(`Are you sure you want to delete all ${notes.length} notes? This cannot be undone.`)) {
+        notes = [];
+        renderNotes();
+      }
+    }
+
+    // Keyboard shortcuts
+    document.getElementById('noteInput').addEventListener('keydown', function(e) {
+      // Ctrl/Cmd + Enter to add note
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        addNote();
+      }
+    });
+
+    // Auto-resize textarea
+    document.getElementById('noteInput').addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+    });
+
+    // Initialize
+    renderNotes();
+    document.getElementById('noteInput').focus();
   </script>
 </body>
 </html>
